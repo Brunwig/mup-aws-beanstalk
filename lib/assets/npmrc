@@ -1,2 +1,2 @@
 unsafe-perm=true
-loglevel=silly
+loglevel=verbose
