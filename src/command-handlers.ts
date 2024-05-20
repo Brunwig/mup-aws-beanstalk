@@ -225,7 +225,7 @@ export async function deploy(api: MupApi) {
   const nextVersion = version + 1;
 
   // Mutates the config, so the meteor.build command will have the correct build location
-  config.app.buildOptions.buildLocation = config.app.buildOptions.buildLocation ||
+  config.app.buildOptions.buildLocation = config.app.buildOptions?.buildLocation ||
     tmpBuildPath(config.app.path, api);
 
   const bundlePath = api.resolvePath(config.app.buildOptions.buildLocation, 'bundle.zip');
