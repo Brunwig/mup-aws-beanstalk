@@ -1,6 +1,6 @@
 {
   "name": "@lytesoft/mup-aws-beanstalk",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "type": "commonjs",
   "description": "Deploy apps to AWS Elastic Beanstalk using Meteor Up",
   "main": "index.js",

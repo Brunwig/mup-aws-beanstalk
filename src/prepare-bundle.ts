@@ -74,8 +74,11 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
   //merge with our custom settings
   let appNpmrcPath = api.resolvePath(api.getBasePath(), `${appPath}/.npmrc`);
   try{
+    console.log('  Merging custom npmrc', appNpmrcPath);
     let originalNpmrcContent = fs.readFileSync(appNpmrcPath).toString();
+    console.log(' Original content', originalNpmrcContent);
     fs.appendFileSync(destPath, '\n' + originalNpmrcContent);
+    console.log("Final content", fs.readFileSync(destPath).toString())
   }
   catch(err){
     //doesn't exist ignore
