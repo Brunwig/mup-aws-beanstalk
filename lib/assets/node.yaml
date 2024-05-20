@@ -1,0 +1,8 @@
+files:
+    # Runs before `npm install` in '50npm.sh'
+    "/opt/elasticbeanstalk/hooks/appdeploy/pre/45node.sh" :
+        mode: "000775"
+        owner: root
+        group: users
+        content: |
+<%- padScript(include('./node.sh'), 12) %>

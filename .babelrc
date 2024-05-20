@@ -1,6 +1,17 @@
 {
-  "plugins": [
-    "@babel/plugin-proposal-object-rest-spread",
-    "@babel/plugin-transform-modules-commonjs"
-  ]
+	"presets": [
+		["@babel/preset-env",
+			{
+				"targets": [
+					"defaults",
+					"last 2 versions",
+					"not IE 11",
+					"node 14"
+				]
+			}
+		]
+	],
+	"assumptions": {
+		"setPublicClassFields": true
+	}
 }
