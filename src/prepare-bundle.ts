@@ -71,6 +71,17 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
   sourcePath = api.resolvePath(__dirname, './assets/npmrc');
   destPath = api.resolvePath(bundlePath, 'bundle/.npmrc');
   copy(sourcePath, destPath);
+  //merge with our custom settings
+  let appNpmrcPath = api.resolvePath(api.getBasePath(), `${appPath}/.npmrc`);
+  try{
+    let originalNpmrcContent = fs.readFileSync(appNpmrcPath).toString();
+    fs.appendFileSync(destPath, '\n' + originalNpmrcContent);
+  }
+  catch(err){
+    //doesn't exist ignore
+  }
+
+
 
   sourcePath = api.resolvePath(__dirname, './assets/start.sh');
   destPath = api.resolvePath(bundlePath, 'bundle/start.sh');
