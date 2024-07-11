@@ -5,8 +5,9 @@ import { MupApi } from "./types";
 import { logStreamEvent, names } from "./utils";
 import { EventDescription } from "@aws-sdk/client-elastic-beanstalk";
 
-let instanceFinderInterval: NodeJS.Timeout | undefined;
+let instanceFinderInterval: { [logName: string]: NodeJS.Timeout | undefined } = {};
 let activeInstanceListeners: { [instanceName: string]: NodeJS.Timeout } = {};
+let stopped = false;
 
 async function listen (
   logGroupName: string,
@@ -80,13 +81,15 @@ async function startInstanceLogListener (
   logGroupName: string,
   instanceName: string
 ) {
+  if (stopped) return;
+
   const logStreamName = instanceName;
 
   try {
-    console.log(`Started listening to ${logGroupName}:${instanceName}`);
     let nextToken: string | undefined = await listen(logGroupName, logStreamName);
 
     return setInterval(async () => {
+      if (stopped) return;
       nextToken = await listen(logGroupName, logStreamName, nextToken);
     }, 5000);
   } catch (err) {
@@ -115,27 +118,39 @@ async function startInstanceListeners (logGroupName: string, instanceNames: stri
 
 export async function startLogStreamListener (
   api: MupApi,
-  eventLog: EventDescription[]
+  eventLog: EventDescription[],
+  logFileName: string
 ) {
   const config = api.getConfig();
-  console.log("Start log stream listener");
+
+  logStreamEvent(`Start log stream listener ${logFileName}`);
 
   const { environment } = names(config);
 
-  const logFileName = 'var/log/web.stdout.log';
   const logGroupName = `/aws/elasticbeanstalk/${environment}/${logFileName}`;
 
   await startInstanceListeners(logGroupName, getInstancesFromLogs(eventLog));
 
-  instanceFinderInterval = setInterval(async () => {
+  instanceFinderInterval[logFileName] = setInterval(async () => {
+    if (stopped) return;
     await startInstanceListeners(logGroupName, getInstancesFromLogs(eventLog));
   }, 5000);
 }
 
 export async function stopLogStreamListener () {
-  clearInterval(instanceFinderInterval);
+  stopped = true;
 
-  Object.values(activeInstanceListeners).forEach(listener => {
+  for (const logName in instanceFinderInterval) {
+    const listener = instanceFinderInterval[logName];
+    logStreamEvent(`Stop log stream listener ${logName}`);
     clearInterval(listener);
-  });
+    delete instanceFinderInterval[logName];
+  }
+
+  for (const instanceName in activeInstanceListeners) {
+    const listener = activeInstanceListeners[instanceName];
+    logStreamEvent(`Stop log stream listener ${instanceName}`);
+    clearInterval(listener);
+    delete activeInstanceListeners[instanceName];
+  }
 }

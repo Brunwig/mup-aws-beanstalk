@@ -1,12 +1,9 @@
-node_modules/
-package-lock.json
-/.deploy
+node_modules
+.vscode
+tests/validate-tmp
 app/.idea
 app/.idea/*
 *.xml
-settings.json
 .DS_Store
-server/private
 *.iml
-.npmrc
 *.tsbuildinfo

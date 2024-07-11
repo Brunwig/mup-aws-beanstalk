@@ -279,7 +279,8 @@ export async function deploy(api: MupApi) {
     });
 
     if (config.app.streamLogs) {
-      await startLogStreamListener(api, eventLog);
+      await startLogStreamListener(api, eventLog, 'var/log/web.stdout.log');
+      await startLogStreamListener(api, eventLog, 'var/log/eb-hooks.log');
     }
   }
 

@@ -149,8 +149,11 @@ export function getNodeVersion(api: MupApi, bundlePath: string) {
 
   const star = JSON.parse(starString);
 
+  const meteorVersion = star?.meteorRelease?.split('@')[1] || "2.12";
+
   if (star.npmVersion) {
     return {
+      meteorVersion,
       nodeVersion: star.nodeVersion,
       npmVersion: star.npmVersion
     };
