@@ -80,14 +80,14 @@ module.exports = {
         // Name of AWS Elastic Beanstalk environment
         envName: 'production',
 
-        // (optional, default is "webapp")
+        // (optional, default is "webserver")
         // Type (or "tier") of the environment. Set it to "worker"
         // to make a worker environment that has no web-facing load-
         // balancer and only responds to SQS queue messages.
         // This will also make the SSL options do nothing.
         // Read more at:
         // https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features-managing-env-tiers.html
-        envType: "webapp"
+        envType: "webserver"
 
         // (optional) Packages to install with the yum package manager
         yumPackages: {

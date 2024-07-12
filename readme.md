@@ -1,9 +1,5 @@
 ## mup-aws-beanstalk
 
-### ----
-### Fork for Version 3 of AWS CLI
-### ----
-
 Plugin for Meteor Up to deploy using AWS Beanstalk.
 
 Features:
