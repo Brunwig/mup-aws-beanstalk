@@ -1,3 +1,7 @@
+## Fork Info
+
+This fork makes sure the node 14 version is used by AWS beanstalk
+
 ## mup-aws-beanstalk
 
 Plugin for Meteor Up to deploy using AWS Beanstalk.

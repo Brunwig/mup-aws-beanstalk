@@ -169,19 +169,25 @@ export async function selectPlatformArn() {
   const {
     PlatformBranchSummaryList
   } = await beanstalk.listPlatformBranches({
-    Filters: [{
-      Attribute: 'LifecycleState',
-      Operator: '=',
-      Values: ['supported']
-    }, {
-      Attribute: 'PlatformName',
-      Operator: '=',
-      Values: ['Node.js']
-    }, {
-      Attribute: 'TierType',
-      Operator: '=',
-      Values: ['WebServer/Standard']
-    }]
+    Filters: [
+    //   {
+    //   Attribute: 'LifecycleState',
+    //   Operator: '=',
+    //   Values: ['supported']
+    // },
+      {
+        Attribute: 'PlatformName',
+        Operator: '=',
+        Values: ['Node.js']
+      }, {
+        Attribute: 'TierType',
+        Operator: '=',
+        Values: ['WebServer/Standard']
+      }, {
+        Attribute: 'BranchName',
+        Operator: 'begins_with',
+        Values: ['Node.js 14']
+      }]
   }).promise();
 
   if (PlatformBranchSummaryList.length === 0) {
@@ -189,6 +195,7 @@ export async function selectPlatformArn() {
   }
 
   const branchName = PlatformBranchSummaryList[0].BranchName;
+  console.log('---->', branchName);
 
   const {
     PlatformSummaryList
@@ -208,6 +215,7 @@ export async function selectPlatformArn() {
   }).promise();
 
   const arn = PlatformSummaryList[0].PlatformArn;
+  console.log('---->', arn);
 
   return arn;
 }

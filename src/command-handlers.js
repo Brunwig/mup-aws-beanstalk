@@ -88,6 +88,7 @@ export async function setup(api) {
     automationDocument
   } = names(config);
 
+  logStep('=> @Brunwig/mup-aws-beanstalk');
   logStep('=> Setting up');
 
   // Create bucket if needed
