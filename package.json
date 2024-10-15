@@ -9,7 +9,7 @@
     "url": "git+https://github.com/lytesoft/mup-aws-beanstalk.git"
   },
   "scripts": {
-    "prepare": "npm run build",
+    "prepare": "node ./skip-build.js || npm run build",
     "build": "tsc --project tsconfig.json && copyfiles -u 1 src/assets/* lib",
     "build:watch": "npm run build -s -- -w",
     "lint": "npm run lint:code && npm run lint:docs",
