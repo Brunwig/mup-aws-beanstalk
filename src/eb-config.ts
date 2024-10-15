@@ -294,8 +294,8 @@ export async function prepareUpdateEnvironment(api: MupApi) {
   };
 }
 
-export function getEnvTierConfig (envType: 'webapp' | 'worker'): EnvironmentTier {
-  if (envType === 'webapp') {
+export function getEnvTierConfig (envType: 'webserver' | 'worker'): EnvironmentTier {
+  if (envType === 'webserver') {
     return {
       Name: "WebServer",
       Type: "Standard"

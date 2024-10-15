@@ -654,7 +654,7 @@ export async function ssl (api: MupApi) {
   const config = api.getConfig();
 
   // Worker envs don't need ssl
-  if (config.app.envType !== 'webapp') return;
+  if (config.app.envType !== 'webserver') return;
 
   await waitForEnvReady(config, true);
 

@@ -11,7 +11,7 @@ export type MupAwsConfig = {
   path: string;
   type: string;
   envName: string;
-  envType: 'webapp' | 'worker';
+  envType: 'webserver' | 'worker';
   buildOptions: {
     buildLocation: string;
     serverOnly?: boolean;
