@@ -1,6 +1,6 @@
 {
   "name": "@lytesoft/mup-aws-beanstalk",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "commonjs",
   "description": "Deploy apps to AWS Elastic Beanstalk using Meteor Up",
   "main": "index.js",
@@ -9,7 +9,7 @@
     "url": "git+https://github.com/lytesoft/mup-aws-beanstalk.git"
   },
   "scripts": {
-    "prepare": "node ./skip-build.js || npm run build",
+    "prepare": "npm run build",
     "build": "tsc --project tsconfig.json && copyfiles -u 1 src/assets/* lib",
     "build:watch": "npm run build -s -- -w",
     "lint": "npm run lint:code && npm run lint:docs",
