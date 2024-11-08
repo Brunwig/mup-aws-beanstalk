@@ -42,7 +42,8 @@ const schema = joi.object().keys({
   sshKey: {
     privateKey: joi.string().required(),
     publicKey: joi.string().required()
-  }
+  },
+  awsPlatformBranchName: joi.string().min(1).required()
 });
 
 export default function (config, utils) {

@@ -10,8 +10,10 @@ import { beanstalk, cloudWatchEvents, iam, s3, sts, ssm, ec2, ec2InstanceConnect
 import { getRecheckInterval } from './recheck';
 import { waitForEnvReady } from './env-ready';
 
+const pkg = require('../package.json'); // Adjust the path as needed
+
 export function logStep(message) {
-  console.log(chalk.blue(message));
+  console.log(`v${pkg?.version} ${chalk.blue(message)}`);
 }
 
 export function shouldRebuild(bundlePath, useCachedBuild) {
@@ -165,16 +167,13 @@ export function getNodeVersion(api, bundlePath) {
   };
 }
 
-export async function selectPlatformArn() {
+export async function selectPlatformArn(awsPlatformBranchName) {
+  console.log('----> Amazon BranchName:', awsPlatformBranchName);
+
   const {
     PlatformBranchSummaryList
   } = await beanstalk.listPlatformBranches({
     Filters: [
-    //   {
-    //   Attribute: 'LifecycleState',
-    //   Operator: '=',
-    //   Values: ['supported']
-    // },
       {
         Attribute: 'PlatformName',
         Operator: '=',
@@ -186,7 +185,7 @@ export async function selectPlatformArn() {
       }, {
         Attribute: 'BranchName',
         Operator: 'begins_with',
-        Values: ['Node.js 14']
+        Values: [awsPlatformBranchName]
       }]
   }).promise();
 
@@ -195,7 +194,7 @@ export async function selectPlatformArn() {
   }
 
   const branchName = PlatformBranchSummaryList[0].BranchName;
-  console.log('---->', branchName);
+  console.log('----> Amazon Platform:', branchName);
 
   const {
     PlatformSummaryList
@@ -215,7 +214,7 @@ export async function selectPlatformArn() {
   }).promise();
 
   const arn = PlatformSummaryList[0].PlatformArn;
-  console.log('---->', arn);
+  console.log('----> Amazon ARN:', arn);
 
   return arn;
 }

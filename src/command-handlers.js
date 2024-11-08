@@ -464,6 +464,7 @@ export async function reconfig(api) {
   } = names(config);
   const deploying = !!api.commandHistory.find(entry => entry.name === 'beanstalk.deploy');
 
+  logStep('=> @Brunwig/mup-aws-beanstalk');
   logStep('=> Configuring Beanstalk environment');
 
   // check if env exists
@@ -487,7 +488,7 @@ export async function reconfig(api) {
       await uploadEnvFile(bucket, 1, envContent);
     }
 
-    const platformArn = await selectPlatformArn();
+    const platformArn = await selectPlatformArn(api.getConfig().app.awsPlatformBranchName);
 
     const [version] = await ebVersions(api);
     await beanstalk.createEnvironment({

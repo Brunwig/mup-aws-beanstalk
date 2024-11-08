@@ -47,6 +47,10 @@ export function createDesiredConfig(mupConfig, settings, longEnvVarsVersion) {
       OptionName: 'IamInstanceProfile',
       Value: instanceProfile
     }, {
+      Namespace: 'aws:autoscaling:launchconfiguration',
+      OptionName: 'DisableIMDSv1',
+      Value: 'true'
+    }, {
       Namespace: 'aws:elasticbeanstalk:environment:process:default',
       OptionName: 'HealthyThresholdCount',
       Value: '2'
