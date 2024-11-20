@@ -36,6 +36,7 @@ const schema = joi.object().keys({
   oldVersions: joi.number(),
   customBeanstalkConfig: joi.array().items(joi.object({
     namespace: joi.string().trim().required(),
+    resource: joi.string().trim().optional(),
     option: joi.string().trim().required(),
     value: joi.string().trim().required()
   })),
