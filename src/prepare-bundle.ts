@@ -54,6 +54,7 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
     forceSSL,
     gracefulShutdown,
     buildOptions,
+    longEnvVars,
     path: appPath
   } = appConfig;
   const bundlePath = buildOptions.buildLocation;
@@ -95,6 +96,8 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
     '.platform',
     '.platform/hooks',
     '.platform/hooks/prebuild',
+    '.platform/confighooks',
+    '.platform/confighooks/prebuild',
     '.platform/nginx',
     '.platform/nginx/conf.d',
     '.platform/nginx/conf.d/elasticbeanstalk'
@@ -116,16 +119,16 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
   const { nodeVersion, npmVersion, meteorVersion } = getNodeVersion(api, bundlePath);
   sourcePath = api.resolvePath(__dirname, './assets/node.yaml');
   destPath = api.resolvePath(bundlePath, 'bundle/.ebextensions/node.config');
-  copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });
-
+  copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });  
   sourcePath = api.resolvePath(__dirname, './assets/node.sh');
   destPath = api.resolvePath(bundlePath, 'bundle/.platform/hooks/prebuild/45node.sh');
+  copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });
+  destPath = api.resolvePath(bundlePath, 'bundle/.platform/confighooks/prebuild/45node.sh');
   copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });
 
   sourcePath = api.resolvePath(__dirname, './assets/nginx.yaml');
   destPath = api.resolvePath(bundlePath, 'bundle/.ebextensions/nginx.config');
   copy(sourcePath, destPath, { forceSSL });
-
   sourcePath = api.resolvePath(__dirname, './assets/nginx-server.conf');
   destPath = api.resolvePath(bundlePath, 'bundle/.platform/nginx/conf.d/elasticbeanstalk/00_application.conf');
   copy(sourcePath, destPath, { forceSSL });
@@ -136,27 +139,33 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
     copy(sourcePath, destPath, { packages: yumPackages });
   }
 
-  if (gracefulShutdown) {
+  if (gracefulShutdown) {    
     sourcePath = api.resolvePath(__dirname, './assets/graceful_shutdown.yaml');
     destPath = api.resolvePath(bundlePath, 'bundle/.ebextensions/graceful_shutdown.config');
     copy(sourcePath, destPath);
-
     sourcePath = api.resolvePath(__dirname, './assets/graceful_shutdown.sh');
     destPath = api.resolvePath(bundlePath, 'bundle/.platform/hooks/prebuild/48graceful_shutdown.sh');
     copy(sourcePath, destPath);
+    destPath = api.resolvePath(bundlePath, 'bundle/.platform/confighooks/prebuild/48graceful_shutdown.sh');
+    copy(sourcePath, destPath);
   }
 
-  sourcePath = api.resolvePath(__dirname, './assets/env.yaml');
-  destPath = api.resolvePath(bundlePath, 'bundle/.ebextensions/env.config');
-  copy(sourcePath, destPath, {
-    bucketName: bucket
-  });
-
-  sourcePath = api.resolvePath(__dirname, './assets/env.sh');
-  destPath = api.resolvePath(bundlePath, 'bundle/.platform/hooks/prebuild/47env.sh');
-  copy(sourcePath, destPath, {
-    bucketName: bucket
-  });
+  if (longEnvVars){    
+    sourcePath = api.resolvePath(__dirname, './assets/env.yaml');
+    destPath = api.resolvePath(bundlePath, 'bundle/.ebextensions/env.config');
+    copy(sourcePath, destPath, {
+      bucketName: bucket
+    });
+    sourcePath = api.resolvePath(__dirname, './assets/env.sh');
+    destPath = api.resolvePath(bundlePath, 'bundle/.platform/hooks/prebuild/47env.sh');
+    copy(sourcePath, destPath, {
+      bucketName: bucket
+    });
+    destPath = api.resolvePath(bundlePath, 'bundle/.platform/confighooks/prebuild/47env.sh');
+    copy(sourcePath, destPath, {
+      bucketName: bucket
+    });
+  }
 
   sourcePath = api.resolvePath(__dirname, './assets/health-check.js');
   destPath = api.resolvePath(bundlePath, 'bundle/health-check.js');
