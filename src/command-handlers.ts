@@ -71,7 +71,7 @@ import {
   waitForHealth
 } from './env-ready';
 import { startLogStreamListener, stopLogStreamListener } from "./deployment-logs";
-import { EventDescription } from "@aws-sdk/client-elastic-beanstalk";
+import { EnvironmentHealth, EventDescription } from "@aws-sdk/client-elastic-beanstalk";
 
 export async function setup (api: MupApi) {
   const config = api.getConfig();
@@ -315,14 +315,16 @@ export async function deploy(api: MupApi) {
     EnvironmentNames: [environment]
   });
 
-  if (nextVersion.toString() === finalEnvironments![0].VersionLabel) {
+  if (nextVersion.toString() === finalEnvironments![0].VersionLabel &&
+     finalEnvironments![0].Health !== EnvironmentHealth.Red
+    ) {
     if (config.app.envType === "worker") {
       console.log(chalk.green(`Worker is running.`));
     } else {
       console.log(chalk.green(`App is running at ${finalEnvironments![0].CNAME}`));
     }
   } else {
-    console.log(chalk.red`Deploy Failed. Visit the Aws Elastic Beanstalk console to view the logs from the failed deploy.`);
+    console.log(chalk.red(`Deploy Failed. Visit the Aws Elastic Beanstalk console to view the logs from the failed deploy.`));
     process.exitCode = 1;
   }
 }
