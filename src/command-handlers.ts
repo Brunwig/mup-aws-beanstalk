@@ -315,9 +315,12 @@ export async function deploy(api: MupApi) {
     EnvironmentNames: [environment]
   });
 
-  if (nextVersion.toString() === finalEnvironments![0].VersionLabel &&
-     finalEnvironments![0].Health !== EnvironmentHealth.Red
-    ) {
+  if (
+    finalEnvironments!.every(
+      environment => environment.VersionLabel === nextVersion.toString() &&
+      environment.Health !== EnvironmentHealth.Red 
+    )
+  ) {
     if (config.app.envType === "worker") {
       console.log(chalk.green(`Worker is running.`));
     } else {
