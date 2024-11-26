@@ -47,4 +47,5 @@ echo "APP_PATH: $APP_PATH"
 
 cd "$APP_PATH"
 ls
+mkdir node_modules
 cd programs/server && npm install --unsafe-perm
