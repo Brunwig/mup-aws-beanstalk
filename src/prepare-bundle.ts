@@ -96,13 +96,12 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
     '.platform',
     '.platform/hooks',
     '.platform/hooks/prebuild',
-    '.platform/hooks/predeploy',
     '.platform/confighooks',
     '.platform/confighooks/prebuild',
-    '.platform/confighooks/predeploy',
     '.platform/nginx',
     '.platform/nginx/conf.d',
-    '.platform/nginx/conf.d/elasticbeanstalk'
+    '.platform/nginx/conf.d/elasticbeanstalk',
+    'node_modules'
   ].forEach((folder) => {
     try {
       fs.mkdirSync(api.resolvePath(bundlePath, 'bundle', folder));
