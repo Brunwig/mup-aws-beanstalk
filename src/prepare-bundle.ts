@@ -118,9 +118,11 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
   // 1) In .platform/hooks. These are used in AWS Linux 2
   // 2) as part of a config file in .ebextensions for older platforms
   const { nodeVersion, npmVersion, meteorVersion } = getNodeVersion(api, bundlePath);
+  /* DEPRECATED
   sourcePath = api.resolvePath(__dirname, './assets/node.yaml');
   destPath = api.resolvePath(bundlePath, 'bundle/.ebextensions/node.config');
-  copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });  
+   copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });  
+   */
   sourcePath = api.resolvePath(__dirname, './assets/node.sh');
   destPath = api.resolvePath(bundlePath, 'bundle/.platform/hooks/prebuild/45node.sh');
   copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });
@@ -170,6 +172,10 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
 
   sourcePath = api.resolvePath(__dirname, './assets/health-check.js');
   destPath = api.resolvePath(bundlePath, 'bundle/health-check.js');
+  copy(sourcePath, destPath);
+
+  sourcePath = api.resolvePath(__dirname, './assets/.placeholder');
+  destPath = api.resolvePath(bundlePath, 'bundle/node_modules/.placeholder');
   copy(sourcePath, destPath);
 
   let customConfigPath = api.resolvePath(api.getBasePath(), `${appPath}/.ebextensions`);

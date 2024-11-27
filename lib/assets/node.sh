@@ -37,7 +37,6 @@ nvm use $NODE_VERSION
 nvm alias default $NODE_VERSION
 npm i -g npm@$NPM_VERSION
 export NODE_PATH=$(dirname $(nvm which $(node --version)))
-export PATH=$NODE_PATH:$PATH
 
 APP_PATH="$(/opt/elasticbeanstalk/bin/get-config container -k app_staging_dir)"
 echo "APP_PATH: $APP_PATH"
@@ -47,8 +46,8 @@ echo "APP_PATH: $APP_PATH"
 echo "APP_PATH: $APP_PATH"
 
 cd "$APP_PATH"
+npm install
 ls
-echo "{}" > package-lock.json
 cd programs/server && npm install --unsafe-perm
 
 
