@@ -34,14 +34,14 @@ if [[ $MAJOR_NODE_VERSION == "14" && $MINOR_NODE_VERSION -ge 21 && $PATCH_NODE_V
   # Use the custom Node.js version
   nvm use "$NODE_VERSION"
   nvm alias default "$NODE_VERSION"
-  export PATH="$NODE_INSTALL_PATH/bin:$PATH"
+  #export PATH="$NODE_INSTALL_PATH/bin:$PATH"
 else
   # Fall back to nvm for other Node.js versions
   echo "Installing and using Node.js via NVM..."
   nvm install "$NODE_VERSION"
   nvm use "$NODE_VERSION"
   nvm alias default "$NODE_VERSION"
-  export PATH="$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH"
+  #export PATH="$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH"
 fi
 echo "Current PATH: $PATH"
 
@@ -60,8 +60,10 @@ echo "NPM version after update: $(npm -v)"
 echo "APP_PATH: $APP_PATH"
 
 if [ ! -d "$APP_PATH" ]; then
-  echo "Error: App staging directory does not exist."
-  exit 1
+  echo "Error: App staging directory does not exist. Probably a config update Dependencies should be there already"
+  CURRENT_PATH="$(echo $(/opt/elasticbeanstalk/bin/get-config platformconfig -k AppDeployDir))"
+  ls "$CURRENT_PATH"
+  exit 0
 else
   cd "$APP_PATH"
 fi
