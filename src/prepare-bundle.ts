@@ -101,7 +101,7 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
     '.platform/nginx',
     '.platform/nginx/conf.d',
     '.platform/nginx/conf.d/elasticbeanstalk',
-    'node_modules'
+    //'node_modules'
   ].forEach((folder) => {
     try {
       fs.mkdirSync(api.resolvePath(bundlePath, 'bundle', folder));
@@ -174,9 +174,9 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
   destPath = api.resolvePath(bundlePath, 'bundle/health-check.js');
   copy(sourcePath, destPath);
 
-  sourcePath = api.resolvePath(__dirname, './assets/.placeholder');
-  destPath = api.resolvePath(bundlePath, 'bundle/node_modules/.placeholder');
-  copy(sourcePath, destPath);
+  //sourcePath = api.resolvePath(__dirname, './assets/.placeholder');
+  //destPath = api.resolvePath(bundlePath, 'bundle/node_modules/.placeholder');
+  //copy(sourcePath, destPath);
 
   let customConfigPath = api.resolvePath(api.getBasePath(), `${appPath}/.ebextensions`);
   let customConfig = fs.existsSync(customConfigPath);
