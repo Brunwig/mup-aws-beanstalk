@@ -96,12 +96,14 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
     '.platform',
     '.platform/hooks',
     '.platform/hooks/prebuild',
+    '.platform/hooks/predeploy',
     '.platform/confighooks',
     '.platform/confighooks/prebuild',
+    '.platform/confighooks/predeploy',
     '.platform/nginx',
     '.platform/nginx/conf.d',
     '.platform/nginx/conf.d/elasticbeanstalk',
-    //'node_modules'
+    'node_modules'
   ].forEach((folder) => {
     try {
       fs.mkdirSync(api.resolvePath(bundlePath, 'bundle', folder));
@@ -118,15 +120,32 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
   // 1) In .platform/hooks. These are used in AWS Linux 2
   // 2) as part of a config file in .ebextensions for older platforms
   const { nodeVersion, npmVersion, meteorVersion } = getNodeVersion(api, bundlePath);
-  /* DEPRECATED
+  
+  /* 
+  sourcePath = api.resolvePath(__dirname, './assets/Procfile');
+  destPath = api.resolvePath(bundlePath, 'bundle/Procfile');
+ 
+  sourcePath = api.resolvePath(__dirname, './assets/prevent-npm.sh');
+  destPath = api.resolvePath(bundlePath, 'bundle/.platform/hooks/prebuild/prevent-npm.sh');
+  copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });
+  destPath = api.resolvePath(bundlePath, 'bundle/.platform/confighooks/prebuild/prevent-npm.sh');
+  copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });  
+  
   sourcePath = api.resolvePath(__dirname, './assets/node.yaml');
   destPath = api.resolvePath(bundlePath, 'bundle/.ebextensions/node.config');
-   copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });  
-   */
+  copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });  
+  
   sourcePath = api.resolvePath(__dirname, './assets/node.sh');
   destPath = api.resolvePath(bundlePath, 'bundle/.platform/hooks/prebuild/45node.sh');
   copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });
   destPath = api.resolvePath(bundlePath, 'bundle/.platform/confighooks/prebuild/45node.sh');
+  copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });
+   */
+
+  sourcePath = api.resolvePath(__dirname, './assets/node.sh');
+  destPath = api.resolvePath(bundlePath, 'bundle/.platform/hooks/predeploy/npm.sh');
+  copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });
+  destPath = api.resolvePath(bundlePath, 'bundle/.platform/confighooks/predeploy/npm.sh');
   copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });
 
   sourcePath = api.resolvePath(__dirname, './assets/nginx.yaml');
@@ -173,10 +192,6 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
   sourcePath = api.resolvePath(__dirname, './assets/health-check.js');
   destPath = api.resolvePath(bundlePath, 'bundle/health-check.js');
   copy(sourcePath, destPath);
-
-  //sourcePath = api.resolvePath(__dirname, './assets/.placeholder');
-  //destPath = api.resolvePath(bundlePath, 'bundle/node_modules/.placeholder');
-  //copy(sourcePath, destPath);
 
   let customConfigPath = api.resolvePath(api.getBasePath(), `${appPath}/.ebextensions`);
   let customConfig = fs.existsSync(customConfigPath);
@@ -241,7 +256,7 @@ export function archiveApp(buildLocation: string, api: MupApi) {
     });
 
     archive.directory(sourceDir, false, (entry) => {
-      if (entry.name.startsWith('.platform/hooks/')) {
+      if (entry.name.startsWith('.platform/hooks/') || entry.name.startsWith('.platform/confighooks/')) {
         // Hooks must be executable for AWS Beanstalk to run them
         // Windows doesn't have a way to make a file be executable, so we
         // set it in the zip file
