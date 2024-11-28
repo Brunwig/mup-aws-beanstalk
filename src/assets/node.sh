@@ -13,14 +13,8 @@ echo "Patch: $PATCH_NODE_VERSION"
 
 export NVM_DIR="/.nvm"
 # Install nvm
-if [ -s "$NVM_DIR/nvm.sh" ]; then
-  echo "nvm is already installed. Sourcing nvm..."
-  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-else
-  echo "nvm not found. Installing"
-  curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.6/install.sh | bash  
-  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-fi
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.6/install.sh | bash
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
 if [[ $MAJOR_NODE_VERSION == "14" && $MINOR_NODE_VERSION -ge 21 && $PATCH_NODE_VERSION -ge 4 ]]; then
   NODE_INSTALL_PATH="/.nvm/versions/node/v$NODE_VERSION"
@@ -45,17 +39,12 @@ echo "NPM version before update: $(npm -v)"
 
 nvm use $NODE_VERSION
 nvm alias default $NODE_VERSION
-
-# Update npm to the specified version
-echo "Updating npm to version $NPM_VERSION..."
 npm i -g npm@$NPM_VERSION
-echo "NPM version after update: $(npm -v)"
-export NODE_PATH=$(dirname $(nvm which $(node --version)))
 
 APP_PATH="$(/opt/elasticbeanstalk/bin/get-config container -k app_staging_dir)"
 echo "APP_PATH: $APP_PATH"
 
-# AWS Linux 2 /2023
+# AWS Linux 2 / 2023
 [[ -z "$APP_PATH" ]] && APP_PATH="$(/opt/elasticbeanstalk/bin/get-config platformconfig -k AppStagingDir)"
 echo "APP_PATH: $APP_PATH"
 
