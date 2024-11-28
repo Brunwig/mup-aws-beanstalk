@@ -121,10 +121,11 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
   // 2) as part of a config file in .ebextensions for older platforms
   const { nodeVersion, npmVersion, meteorVersion } = getNodeVersion(api, bundlePath);
   
-  /* 
+
   sourcePath = api.resolvePath(__dirname, './assets/Procfile');
   destPath = api.resolvePath(bundlePath, 'bundle/Procfile');
  
+  /* 
   sourcePath = api.resolvePath(__dirname, './assets/prevent-npm.sh');
   destPath = api.resolvePath(bundlePath, 'bundle/.platform/hooks/prebuild/prevent-npm.sh');
   copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });
