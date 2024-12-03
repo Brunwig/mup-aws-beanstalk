@@ -38,6 +38,7 @@ export type MupAwsConfig = {
   instanceType: string;
   gracefulShutdown?: boolean;
   longEnvVars?: boolean;
+  requireRoleInstance?: boolean;
   yumPackages?: {
     [key: string]: string;
   };
