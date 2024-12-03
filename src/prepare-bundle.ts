@@ -55,7 +55,7 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
     gracefulShutdown,
     buildOptions,
     longEnvVars,
-    requireRoleInstance,
+    requireInstanceRole,
     path: appPath
   } = appConfig;
   const bundlePath = buildOptions.buildLocation;
@@ -87,7 +87,7 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
   }
 
 
-  if (requireRoleInstance){
+  if (requireInstanceRole){
     //to use with apps that can do multiple roles
     sourcePath = api.resolvePath(__dirname, './assets/role-start.sh'); 
   }

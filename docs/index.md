@@ -148,7 +148,7 @@ module.exports = {
 }
 ```
 
-Changes to `yumPackages`, `forceSSL`, `buildOptions`, and `longEnvVars` requires deploying a new version to take affect.
+Changes to `yumPackages`, `forceSSL`, `buildOptions`, ``requireInstanceRole` and `longEnvVars` requires deploying a new version to take affect.
 
 ## Commands
 
