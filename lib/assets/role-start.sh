@@ -26,7 +26,7 @@ while [ -z "$INSTANCE_ROLE" ]; do
         echo "Timeout: INSTANCE_ROLE not set after $MAX_WAIT seconds. Exiting."
         exit 1
     else
-        echo "Waited $COUNT seconds for INSTANCE_ROLE to be set..."
+        echo "Waited $WAITED seconds for INSTANCE_ROLE to be set..."
     fi
 done
 export INSTANCE_ROLE
