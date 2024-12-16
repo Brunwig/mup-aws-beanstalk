@@ -11,9 +11,6 @@ echo "Node version"
 echo $(node --version)
 echo "Npm version"
 echo $(npm --version)
-echo "=> Starting health check server"
-node health-check.js &
-
 export METEOR_SETTINGS=$(node -e 'console.log(decodeURIComponent(process.env.METEOR_SETTINGS_ENCODED))')
 
 MAX_WAIT=60  # Timeout in seconds
@@ -29,8 +26,20 @@ while [ -z "$INSTANCE_ROLE" ]; do
         echo "Waited $WAITED seconds for INSTANCE_ROLE to be set..."
     fi
 done
-export INSTANCE_ROLE
-echo "INSTANCE_ROLE is set to '$INSTANCE_ROLE'"
 
+# Update all environment variables
+if [ -f /etc/environment ]; then
+    echo "Updating environment variables from /etc/environment"
+    set -a  # Automatically export all variables
+    source /etc/environment
+    set +a
+else
+    echo "/etc/environment file not found."
+fi
+
+echo "INSTANCE_ROLE is set to '$INSTANCE_ROLE'"
+echo "FIRST_INSTANCE is set to '$FIRST_INSTANCE'"
+echo "=> Starting health check server"
+node health-check.js &
 echo "=> Starting App"
 node main.js
