@@ -73,7 +73,7 @@ import {
 import { startLogStreamListener, stopLogStreamListener } from "./deployment-logs";
 import { EnvironmentHealth, EventDescription } from "@aws-sdk/client-elastic-beanstalk";
 
-export async function setup (api: MupApi) {
+export async function setup(api: MupApi) {
   const config = api.getConfig();
   const appConfig = config.app;
 
@@ -315,24 +315,37 @@ export async function deploy(api: MupApi) {
     EnvironmentNames: [environment]
   });
 
-  if (
-    finalEnvironments!.every(
-      environment => environment.VersionLabel === nextVersion.toString() &&
-      environment.Health !== EnvironmentHealth.Red 
-    )
-  ) {
+  const waitSeconds = 31;
+  if (nextVersion.toString() === finalEnvironments?.[0]?.VersionLabel) {
+    if (finalEnvironments[0].Health === EnvironmentHealth.Red) {
+      console.log(`Health status: ${finalEnvironments[0].Health}, waiting ${waitSeconds} seconds to ensure health status is stable`);
+      await new Promise((resolve) => {
+        setTimeout(resolve, waitSeconds * 1000);
+      });
+      const {
+        Environments: reCheckedEnvironments
+      } = await beanstalk.describeEnvironments({
+        ApplicationName: app,
+        EnvironmentNames: [environment]
+      });
+      if (reCheckedEnvironments?.[0].Health === EnvironmentHealth.Red) {
+        console.log(chalk.red(`Deploy Failed with invalid Health Status. Visit the Aws Elastic Beanstalk console to view the logs from the failed deploy.`));
+        process.exitCode = 1;
+      }
+    }
+
     if (config.app.envType === "worker") {
       console.log(chalk.green(`Worker is running.`));
     } else {
       console.log(chalk.green(`App is running at ${finalEnvironments![0].CNAME}`));
     }
   } else {
-    console.log(chalk.red(`Deploy Failed. Visit the Aws Elastic Beanstalk console to view the logs from the failed deploy.`));
+    console.log(chalk.red(`Deploy Failed. Version expected ${nextVersion.toString()} (found ${finalEnvironments?.[0]?.VersionLabel}). Visit the Aws Elastic Beanstalk console to view the logs from the failed deploy.`));
     process.exitCode = 1;
   }
 }
 
-export async function logs (api: MupApi) {
+export async function logs(api: MupApi) {
   const logsContent = await getLogs(api, ['web.stdout.log', 'nodejs/nodejs.log']);
 
   logsContent.forEach(({ instance, data }) => {
@@ -340,7 +353,7 @@ export async function logs (api: MupApi) {
   });
 }
 
-export async function logsNginx (api: MupApi) {
+export async function logsNginx(api: MupApi) {
   const logsContent = await getLogs(api, ['nginx/error.log', 'nginx/access.log']);
 
   logsContent.forEach(({ instance, data }) => {
@@ -349,7 +362,7 @@ export async function logsNginx (api: MupApi) {
   });
 }
 
-export async function logsEb (api: MupApi) {
+export async function logsEb(api: MupApi) {
   const logsContent = await getLogs(api, ['eb-engine.log', 'eb-activity.log']);
 
   logsContent.forEach(({ data, instance }) => {
@@ -357,7 +370,7 @@ export async function logsEb (api: MupApi) {
   });
 }
 
-export async function start (api: MupApi) {
+export async function start(api: MupApi) {
   const config = api.getConfig();
   const {
     environment
@@ -388,7 +401,7 @@ export async function start (api: MupApi) {
   await waitForHealth(config, undefined, false);
 }
 
-export async function stop (api: MupApi) {
+export async function stop(api: MupApi) {
   const config = api.getConfig();
   const {
     environment
@@ -414,7 +427,7 @@ export async function stop (api: MupApi) {
   await waitForHealth(config, 'Grey', false);
 }
 
-export async function restart (api: MupApi) {
+export async function restart(api: MupApi) {
   const config = api.getConfig();
   const {
     environment
@@ -429,7 +442,7 @@ export async function restart (api: MupApi) {
   await waitForEnvReady(config, false);
 }
 
-export async function clean (api: MupApi) {
+export async function clean(api: MupApi) {
   const config = api.getConfig();
   const {
     app,
@@ -465,7 +478,7 @@ export async function clean (api: MupApi) {
   await Promise.all(promises);
 }
 
-export async function reconfig (api: MupApi) {
+export async function reconfig(api: MupApi) {
   const config = api.getConfig();
   const {
     app,
@@ -564,7 +577,7 @@ export async function reconfig (api: MupApi) {
   }
 }
 
-export async function events (api: MupApi) {
+export async function events(api: MupApi) {
   const {
     environment
   } = names(api.getConfig());
@@ -578,7 +591,7 @@ export async function events (api: MupApi) {
   console.log(envEvents!.map(ev => `${ev.EventDate}: ${ev.Message}`).join('\n'));
 }
 
-export async function status (api: MupApi) {
+export async function status(api: MupApi) {
   const {
     environment
   } = names(api.getConfig());
@@ -655,7 +668,7 @@ export async function status (api: MupApi) {
   }
 }
 
-export async function ssl (api: MupApi) {
+export async function ssl(api: MupApi) {
   const config = api.getConfig();
 
   // Worker envs don't need ssl
@@ -770,7 +783,7 @@ export async function ssl (api: MupApi) {
   }
 }
 
-export async function shell (api: MupApi) {
+export async function shell(api: MupApi) {
   const {
     selected,
     description
@@ -820,7 +833,7 @@ export async function shell (api: MupApi) {
   }).connect(sshOptions);
 }
 
-export async function debug (api: MupApi) {
+export async function debug(api: MupApi) {
   const config = api.getConfig();
   const {
     selected,
