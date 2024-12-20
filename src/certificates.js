@@ -25,6 +25,12 @@ export default async function ensureSSLConfigured(config, certificateArn) {
     Namespace: 'aws:elbv2:listener:443',
     OptionName: 'Protocol',
     Value: 'HTTPS'
+  },
+  // Force SSLv3
+  {
+    Namespace: 'aws:elbv2:listener:443',
+    OptionName: 'SSLPolicy',
+    Value: 'ELBSecurityPolicy-TLS13-1-2-2021-06'
   }];
 
   const domains = config.app.sslDomains;

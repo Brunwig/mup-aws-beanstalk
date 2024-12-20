@@ -34,6 +34,7 @@ import {
   ensureBucketPolicyAttached,
   getAccountId,
   getLogs,
+  downloadFullServerLogs,
   logStep,
   names,
   tmpBuildPath,
@@ -323,6 +324,12 @@ export async function logs(api) {
     console.log(`${instance} `, data[0] || data[1]);
   });
 }
+
+export async function fullLogs(api) {
+  const logsContent = await downloadFullServerLogs(api);
+  logStep(`=> downloadFullServerLogs: ${JSON.stringify(logsContent, null, '\t')}`);
+}
+
 
 export async function logsNginx(api) {
   const logsContent = await getLogs(api, ['nginx/error.log', 'nginx/access.log']);

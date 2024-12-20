@@ -1,6 +1,7 @@
 import axios from 'axios';
 import chalk from 'chalk';
 import fs from 'fs';
+import path from 'path';
 import { isEqual } from 'lodash';
 import os from 'os';
 import random from 'random-seed';
@@ -9,6 +10,8 @@ import { execSync } from 'child_process';
 import { beanstalk, cloudWatchEvents, iam, s3, sts, ssm, ec2, ec2InstanceConnect } from './aws';
 import { getRecheckInterval } from './recheck';
 import { waitForEnvReady } from './env-ready';
+
+
 
 const pkg = require('../package.json'); // Adjust the path as needed
 
@@ -64,7 +67,7 @@ export function createUniqueName(prefix = '') {
   return `${prefix}-${Date.now()}-${randomNumbers}`;
 }
 
-async function retrieveEnvironmentInfo(api, count) {
+async function retrieveEnvironmentInfo(api, count, requestTime = new Date(Date.now() - 60 * 60 * 1000), infoType = 'tail') {
   const config = api.getConfig();
   const {
     environment
@@ -74,20 +77,29 @@ async function retrieveEnvironmentInfo(api, count) {
     EnvironmentInfo
   } = await beanstalk.retrieveEnvironmentInfo({
     EnvironmentName: environment,
-    InfoType: 'tail'
+    InfoType: infoType
   }).promise();
 
-  if (EnvironmentInfo.length > 0) {
-    return EnvironmentInfo;
+  // Filter logs by the initial request timestamp
+  const newestEntries = EnvironmentInfo.filter((log) => {
+    const sampeDate = new Date(log.SampleTimestamp);
+    // console.log('   - ', count, sampeDate >= requestTime, sampeDate" - ", requestTime);
+    return sampeDate >= requestTime;
+  });
+
+  if (newestEntries.length > 0) {
+    return newestEntries;
   } else if (count > 5) {
     throw new Error('No logs');
   }
 
   return new Promise((resolve, reject) => {
     setTimeout(() => {
+      logStep(`  - retrieveEnvironmentInfo retry [${count}]`);
+
       // The logs aren't always available, so retry until they are
       // Another option is to look for the event that says it is ready
-      retrieveEnvironmentInfo(api, count + 1)
+      retrieveEnvironmentInfo(api, count + 1, requestTime, infoType)
         .then(resolve)
         .catch(reject);
     }, getRecheckInterval());
@@ -137,6 +149,55 @@ export async function getLogs(api, logNames) {
         });
       }).catch(reject);
     })));
+}
+
+export async function downloadFullServerLogs(api) {
+  const config = api.getConfig();
+  const { environment } = names(config);
+
+  // Ensure the logs folder exists
+  const logsFolder = './fullLogs/';
+  if (!fs.existsSync(logsFolder)) {
+    fs.mkdirSync(logsFolder);
+  }
+
+  await waitForEnvReady(config, false);
+
+  // Record the time of the request
+  const requestTime = new Date();
+  logStep('=> Requesting FullServerLogs');
+
+
+  await beanstalk.requestEnvironmentInfo({
+    EnvironmentName: environment,
+    InfoType: 'bundle' // Request full logs instead of just the tail
+  }).promise();
+
+  const latestData = await retrieveEnvironmentInfo(api, 0, requestTime, 'bundle');
+
+  logStep('=> Downloading Logs Bundle');
+  if (!latestData) {
+    throw new Error('No logs bundle found.');
+  }
+
+  const filePaths = Promise.allSettled(latestData.map(async (bundleInfo) => {
+    // Download the zip file
+    const response = await axios.get(bundleInfo.Message, {
+      responseType: 'arraybuffer'
+    });
+    const timestamp = `${bundleInfo.SampleTimestamp.toISOString()
+      .split('T')[0]}_${bundleInfo.SampleTimestamp.toTimeString().split(' ')[0]}`;
+
+    const filename = `${timestamp}__${bundleInfo.Ec2InstanceId}.zip`;
+    const filePath = path.join(logsFolder, filename);
+    fs.writeFileSync(filePath, response.data);
+
+    // logStep(`Logs bundle saved to ${filePath}`);
+    return filePath;
+  }));
+  // console.log('filePaths', filePaths);
+
+  return filePaths;
 }
 
 export function getNodeVersion(api, bundlePath) {

@@ -49,6 +49,12 @@ export const logs = {
   handler: prepare(commandHandlers.logs)
 };
 
+export const fullLogs = {
+  name: 'fullLogs',
+  description: 'Download fullLogs',
+  handler: prepare(commandHandlers.fullLogs)
+};
+
 export const logsNginx = {
   name: 'logs-nginx',
   description: 'View Nginx logs',
