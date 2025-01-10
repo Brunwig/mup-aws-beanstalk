@@ -75,33 +75,35 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
   copy(sourcePath, destPath);
   //merge with our custom settings
   let appNpmrcPath = api.resolvePath(api.getBasePath(), `${appPath}/.npmrc`);
-  try{
+  try {
     let originalNpmrcContent = fs.readFileSync(appNpmrcPath).toString();
-    if (originalNpmrcContent){
+    if (originalNpmrcContent) {
       console.log('  Merging custom npmrc', appNpmrcPath);
     }
     fs.appendFileSync(destPath, '\n' + originalNpmrcContent);
   }
-  catch(err){
+  catch (err) {
     //doesn't exist ignore
   }
 
 
-  if (requireInstanceRole){
+  if (requireInstanceRole) {
     //to use with apps that can do multiple roles
-    sourcePath = api.resolvePath(__dirname, './assets/role-start.sh'); 
+    sourcePath = api.resolvePath(__dirname, './assets/role-start.sh');
   }
-  else{
-    sourcePath = api.resolvePath(__dirname, './assets/start.sh');   
+  else {
+    sourcePath = api.resolvePath(__dirname, './assets/start.sh');
   }
-   destPath = api.resolvePath(bundlePath, 'bundle/start.sh');
-    copy(sourcePath, destPath);
+  destPath = api.resolvePath(bundlePath, 'bundle/start.sh');
+  copy(sourcePath, destPath);
 
   [
     '.ebextensions',
     '.platform',
     '.platform/hooks',
     '.platform/hooks/prebuild',
+    '.platform/confighooks/',
+    '.platform/confighooks/prebuild',
     '.platform/nginx',
     '.platform/nginx/conf.d',
     '.platform/nginx/conf.d/elasticbeanstalk'
@@ -121,17 +123,16 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
   // 1) In .platform/hooks. These are used in AWS Linux 2
   // 2) as part of a config file in .ebextensions for older platforms
   const { nodeVersion, npmVersion, meteorVersion } = getNodeVersion(api, bundlePath);
-  sourcePath = api.resolvePath(__dirname, './assets/node.yaml');
-  destPath = api.resolvePath(bundlePath, 'bundle/.ebextensions/node.config');
-  copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });
 
   sourcePath = api.resolvePath(__dirname, './assets/node.sh');
   destPath = api.resolvePath(bundlePath, 'bundle/.platform/hooks/prebuild/45node.sh');
   copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });
+  destPath = api.resolvePath(bundlePath, 'bundle/.platform/confighooks/prebuild/45node.sh');
+  copy(sourcePath, destPath, { nodeVersion, npmVersion, meteorVersion });
 
-  sourcePath = api.resolvePath(__dirname, './assets/nginx.yaml');
-  destPath = api.resolvePath(bundlePath, 'bundle/.ebextensions/nginx.config');
-  copy(sourcePath, destPath, { forceSSL });
+  //sourcePath = api.resolvePath(__dirname, './assets/nginx.yaml');
+  //destPath = api.resolvePath(bundlePath, 'bundle/.ebextensions/nginx.config');
+  //copy(sourcePath, destPath, { forceSSL });
 
   sourcePath = api.resolvePath(__dirname, './assets/nginx-server.conf');
   destPath = api.resolvePath(bundlePath, 'bundle/.platform/nginx/conf.d/elasticbeanstalk/00_application.conf');
@@ -144,22 +145,12 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
   }
 
   if (gracefulShutdown) {
-    sourcePath = api.resolvePath(__dirname, './assets/graceful_shutdown.yaml');
-    destPath = api.resolvePath(bundlePath, 'bundle/.ebextensions/graceful_shutdown.config');
-    copy(sourcePath, destPath);
-
     sourcePath = api.resolvePath(__dirname, './assets/graceful_shutdown.sh');
     destPath = api.resolvePath(bundlePath, 'bundle/.platform/hooks/prebuild/48graceful_shutdown.sh');
     copy(sourcePath, destPath);
   }
 
-  if (longEnvVars){  
-    sourcePath = api.resolvePath(__dirname, './assets/env.yaml');
-    destPath = api.resolvePath(bundlePath, 'bundle/.ebextensions/env.config');
-    copy(sourcePath, destPath, {
-      bucketName: bucket
-    });
-
+  if (longEnvVars) {
     sourcePath = api.resolvePath(__dirname, './assets/env.sh');
     destPath = api.resolvePath(bundlePath, 'bundle/.platform/hooks/prebuild/47env.sh');
     copy(sourcePath, destPath, {

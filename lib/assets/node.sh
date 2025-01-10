@@ -41,13 +41,10 @@ nvm use $NODE_VERSION
 nvm alias default $NODE_VERSION
 npm i -g npm@$NPM_VERSION
 
-APP_PATH="$(/opt/elasticbeanstalk/bin/get-config container -k app_staging_dir)"
-echo "APP_PATH: $APP_PATH"
-
 # AWS Linux 2 / 2023
 [[ -z "$APP_PATH" ]] && APP_PATH="$(/opt/elasticbeanstalk/bin/get-config platformconfig -k AppStagingDir)"
 echo "APP_PATH: $APP_PATH"
 
 cd "$APP_PATH"
-ls
+echo "Installing npm dependencies"
 cd programs/server && npm install --unsafe-perm

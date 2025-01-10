@@ -1,7 +1,0 @@
-files:
-    "/opt/elasticbeanstalk/hooks/appdeploy/pre/48graceful_shutdown.sh" :
-        mode: "000775"
-        owner: root
-        group: users
-        content: |
-<%- padScript(include('./graceful_shutdown.sh'), 12) %>
