@@ -11,7 +11,23 @@ echo "Node version"
 echo $(node --version)
 echo "Npm version"
 echo $(npm --version)
-export METEOR_SETTINGS=$(node -e 'console.log(decodeURIComponent(process.env.METEOR_SETTINGS_ENCODED))')
+# Check if meteor-settings.js exists and prepend METEOR_SETTINGS to main.js
+SETTINGS_FILE="./programs/server/assets/app/meteor-settings.js"
+MAIN_JS="./main.js"
+TEMP_MAIN_JS="./main_temp.js"
+
+if [ -f "$SETTINGS_FILE" ]; then
+    echo "Found settings file"
+     
+    # Prepend the require statement to main.js
+    echo "Requiring settings.js in main.js"
+    echo "require('$SETTINGS_FILE');" > "$TEMP_MAIN_JS"
+    cat "$MAIN_JS" >> "$TEMP_MAIN_JS"
+    mv "$TEMP_MAIN_JS" "$MAIN_JS"
+else
+    export METEOR_SETTINGS=$(node -e 'console.log(decodeURIComponent(process.env.METEOR_SETTINGS_ENCODED))')
+fi
+
 
 MAX_WAIT=60  # Timeout in seconds
 WAITED=0
