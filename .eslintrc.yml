@@ -1,5 +1,5 @@
-parser: babel-eslint
-extends: airbnb
+parser: '@babel/eslint-parser'
+extends: standard
 rules:
   comma-dangle: [2, 'never']
   no-plusplus: 0

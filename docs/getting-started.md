@@ -8,7 +8,7 @@ You can install `mup` and `mup-aws-beanstalk` by running
 npm i -g mup mup-aws-beanstalk
 ```
 
-The AWS Beanstalk plugin requires Node 4 or newer and Meteor Up 1.3.5 or newer.
+The AWS Beanstalk plugin requires Node 14 or newer and Meteor Up 1.3.5 or newer.
 
 ## Step 1: Initialize your project
 

@@ -1,4 +1,9 @@
 node_modules
-lib
 .vscode
 tests/validate-tmp
+app/.idea
+app/.idea/*
+*.xml
+.DS_Store
+*.iml
+*.tsbuildinfo
