@@ -137,7 +137,8 @@ export function injectFiles(api: MupApi, name: string, version: number, appConfi
   sourcePath = api.resolvePath(__dirname, './assets/nginx-server.conf');
   destPath = api.resolvePath(bundlePath, 'bundle/.platform/nginx/conf.d/elasticbeanstalk/00_application.conf');
   copy(sourcePath, destPath, { forceSSL });
-
+  console.log("---> injectFiles", sourcePath, destPath);
+  
   if (yumPackages) {
     sourcePath = api.resolvePath(__dirname, './assets/packages.yaml');
     destPath = api.resolvePath(bundlePath, 'bundle/.ebextensions/packages.config');

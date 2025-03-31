@@ -261,7 +261,7 @@ export async function selectPlatformArn(awsPlatformBranchName: string) {
   }
 
   const branchName = PlatformBranchSummaryList[0].BranchName as string;
-  console.log('----> Amazon Platform:', branchName, "allBranches:", PlatformBranchSummaryList.join(","));
+  console.log('----> Amazon Platform:', branchName, "allBranches:", PlatformBranchSummaryList.length, "branches:", JSON.stringify(PlatformBranchSummaryList.map((pb)=>pb.BranchName)));
 
   const {
     PlatformSummaryList

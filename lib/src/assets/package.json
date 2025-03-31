@@ -1,7 +1,0 @@
-{
-  "name": "<%= name %>",
-  "version": "<%= version %>.0.0",
-  "scripts": {
-    "start": "bash ./start.sh"
-  }
-}

@@ -35,7 +35,8 @@ export async function ensureSSLConfigured(
     Namespace: 'aws:elbv2:listener:443',
     OptionName: 'SSLPolicy',
     Value: 'ELBSecurityPolicy-TLS13-1-2-2021-06'
-  }];
+  }
+  ];
 
   const domains = config.app.sslDomains;
 
@@ -43,12 +44,12 @@ export async function ensureSSLConfigured(
   if (!domains || domains.length === 0) {
     return;
   }
-
   const { ConfigurationSettings } = await beanstalk
-    .describeConfigurationSettings({
-      EnvironmentName: environment,
-      ApplicationName: app,
-    });
+  .describeConfigurationSettings({
+    EnvironmentName: environment,
+    ApplicationName: app,
+  });
+  console.log("--->", "ensureSSLConfigured", ConfigurationSettings)
 
   const firstConfig = ConfigurationSettings?.[0];
   const current = firstConfig!.OptionSettings!.reduce(
@@ -65,6 +66,7 @@ export async function ensureSSLConfigured(
   if (!needToUpdate) {
     return;
   }
+  console.log("--->", "ensureSSLConfigured updateEnvironment", environment, ebConfig)
 
   await beanstalk
     .updateEnvironment({

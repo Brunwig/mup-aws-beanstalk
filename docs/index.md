@@ -76,6 +76,10 @@ module.exports = {
         // (optional, default is us-east-1) AWS region to deploy to
         region: 'us-west-1',
 
+        // name of the aws platform to us - matches the start portion of the name
+        // https://docs.aws.amazon.com/elasticbeanstalk/latest/platforms/platform-history-nodejs.html
+        awsPlatformBranchName: 'Node.js 20',
+
         // (optional, default is "mup-env-<app name>")
         // Name of AWS Elastic Beanstalk environment
         envName: 'production',

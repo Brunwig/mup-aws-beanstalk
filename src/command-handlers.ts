@@ -244,9 +244,10 @@ export async function deploy(api: MupApi) {
     await archiveApp(config.app.buildOptions.buildLocation, api);
   }
 
-  logStep('=> Uploading bundle');
-
+  
   const key = `${bundlePrefix}${nextVersion}`;
+  logStep(`=> Uploading bundle ${key} ${bundlePath}`);
+
   await upload(bucket, `${bundlePrefix}${nextVersion}`, bundlePath);
 
   logStep('=> Creating version');
@@ -472,13 +473,15 @@ export async function clean(api: MupApi) {
       VersionLabel: versions[i].toString(),
       DeleteSourceBundle: true
     }));
+    console.log("  - ", versions[i].toString());
   }
-
+  
   for (let i = 0; i < envVersions.length; i++) {
     promises.push(s3.deleteObject({
       Bucket: bucket,
       Key: `env/${envVersions[i]}.txt`
     }));
+    console.log("  - ", `env/${envVersions[i]}.txt`, bucket);
   }
 
   // TODO: remove bundles

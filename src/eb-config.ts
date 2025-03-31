@@ -208,7 +208,7 @@ export function convertToObject (
   // const key = [`${option.Namespace}-${option.OptionName}${resourceKey}`];
   const key = `${option.Namespace}-${option.OptionName}${resourceKey}`;
   result[key] = option as EBConfigElement;
-  console.log("convertToObj -->", result[key], resourceKey, key);
+  // console.log("convertToObj -->", result[key], resourceKey, key);
   return result;
 }
 
@@ -220,7 +220,7 @@ export function mergeConfigs (config1: EBConfigElement[], config2: EBConfigEleme
     //const key = [`${option.Namespace}-${option.OptionName}${resourceKey}`];
     const key = `${option.Namespace}-${option.OptionName}${resourceKey}`;
     configDict[key] = option;
-    console.log("mergeConfigs -->", configDict[key], resourceKey, key);
+    // console.log("mergeConfigs -->", configDict[key], resourceKey, key);
   });
 
   return Object.values(configDict);
