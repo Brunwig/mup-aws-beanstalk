@@ -10,9 +10,28 @@ echo "env_version=$env_version"
 export NVM_DIR="/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
 
-instance_profile=`curl http://169.254.169.254/$VERSION/meta-data/iam/security-credentials/`
-json=`curl http://169.254.169.254/$VERSION/meta-data/iam/security-credentials/${instance_profile}`
-instance_region=`curl http://169.254.169.254/latest/meta-data/placement/availability-zone | sed 's/.$//'`
+# instance_profile=`curl http://169.254.169.254/$VERSION/meta-data/iam/security-credentials/`
+# json=`curl http://169.254.169.254/$VERSION/meta-data/iam/security-credentials/${instance_profile}`
+# instance_region=`curl http://169.254.169.254/latest/meta-data/placement/availability-zone | sed 's/.$//'`
+
+# Get an IMDSv2 token (valid for 6 hours here)
+TOKEN=$(curl -sS -X PUT "http://169.254.169.254/latest/api/token" \
+  -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+
+# Instance profile (role name)
+instance_profile=$(curl -sS -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/iam/security-credentials/)
+
+# Temp credentials JSON for that profile
+json=$(curl -sS -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/iam/security-credentials/${instance_profile})
+
+# Region (strip last letter from AZ)
+instance_region=$(curl -sS -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/placement/availability-zone | sed 's/.$//')
+
+echo "instance_profile: ${instance_profile}"
+echo "instance_region: ${instance_region}"
 
 function getInstanceProfileProperty () {
   result=`node -e "console.log(JSON.parse(process.argv.slice(2).join(''))[process.argv[1]])" $1 $json`
