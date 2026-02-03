@@ -13,6 +13,7 @@ Features:
 - Zero downtime deploys
 - Automatically uses the correct node version
 - Worker environments
+- AWS Profile support for easier credential management
 - All AWS specific functions used are documented here: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/ElasticBeanstalk.html#createPlatformVersion-property
 [Getting Started Guide](./docs/getting-started.md)
 

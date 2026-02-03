@@ -53,6 +53,10 @@ module.exports = {
             // IAM user's Secret access key
             secret: '6789'
         },
+        // Alternative: Use an AWS profile instead of id/secret
+        // auth: {
+        //   profile: 'my-profile'
+        // },
         env: {
             ROOT_URL: 'http://website.com',
             MONGO_URL: 'mongodb://user:pass@domain.com'
@@ -223,6 +227,43 @@ The log commands shows the last 100 lines. You can download a zip file with all 
 ## Meteor and Node versions
 
 This plugin supports meteor 1.2 or newer. It will automatically use the correct Node and npm version.
+
+## AWS Authentication
+
+You can authenticate with AWS in two ways:
+
+### Using Access Keys (Default)
+
+Provide your IAM user's access key ID and secret in the `auth` object:
+
+```js
+module.exports = {
+    app: {
+        auth: {
+            id: '12345',
+            secret: '6789'
+        }
+        // ... rest of config
+    }
+};
+```
+
+### Using AWS Profiles
+
+If you have AWS CLI configured with named profiles in `~/.aws/credentials`, you can use them instead:
+
+```js
+module.exports = {
+    app: {
+        auth: {
+            profile: 'my-profile'
+        },
+        // ... rest of config
+    }
+};
+```
+
+When `auth.profile` is set, the plugin will use the credentials from the specified profile in your AWS credentials file.
 
 ## SSL
 

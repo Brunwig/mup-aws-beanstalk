@@ -1,6 +1,7 @@
 import * as _commands from './commands';
 import validator from './validate';
 import { MupConfig, MupApi, MupUtils } from "./types";
+import { logStep } from './utils';
 
 export const name = 'beanstalk';
 export const description = 'Deploy Meteor app to AWS Elastic Beanstalk';
@@ -21,7 +22,7 @@ export function prepareConfig(config: MupConfig) {
     return config;
   }
 
-  console.log('🛠️ Preparing config for AWS Elastic Beanstalk');
+  logStep('  🛠️  Preparing config for AWS Elastic Beanstalk');
 
   const defaultBuildOptions = {
     serverOnly: true

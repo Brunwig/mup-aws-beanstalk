@@ -26,8 +26,9 @@ export type MupAwsConfig = {
   };
   env: Env;
   auth: {
-    id: string;
-    secret: string;
+    id?: string;
+    secret?: string;
+    profile?: string;
   };
   sslDomains?: Array<string>;
   forceSSL?: boolean;

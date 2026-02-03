@@ -1,6 +1,6 @@
 {
   "name": "@brunwig/mup-aws-beanstalk",
-  "version": "2.1.0",
+  "version": "2.2.1",
   "type": "commonjs",
   "description": "Deploy apps to AWS Elastic Beanstalk using Meteor Up",
   "main": "index.js",

@@ -40,6 +40,10 @@ module.exports = {
             id: '12345',
             secret: '6789'
         },
+        // Optional: Use an AWS profile instead of id/secret
+        // auth: {
+        //   profile: 'my-profile'
+        // },
         minInstances: 1
     },
     plugins: ['mup-aws-beanstalk']

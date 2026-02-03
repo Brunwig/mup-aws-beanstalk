@@ -20,8 +20,9 @@ const schema = joi.object().keys({
   docker: joi.object(),
   env: joi.object(),
   auth: joi.object().keys({
-    id: joi.string().required(),
-    secret: joi.string().required()
+    id: joi.string(),
+    secret: joi.string(),
+    profile: joi.string()
   }).required(),
   sslDomains: joi.array().items(joi.string()),
   forceSSL: joi.bool(),
@@ -64,6 +65,31 @@ export default function (config: MupConfig, utils: MupUtils) {
       message: 'must have at least 4 characters',
       path: 'name'
     });
+  }
+
+  // Validate that either profile or credentials (id and secret) are provided
+  if (config.app && config.app.auth) {
+    const hasProfile = config.app.auth.profile && config.app.auth.profile.length > 0;
+    const hasCredentials = config.app.auth.id && 
+                          config.app.auth.id.length > 0 &&
+                          config.app.auth.secret && 
+                          config.app.auth.secret.length > 0;
+
+    if (!hasProfile && !hasCredentials) {
+      details.push({
+        message: 'Either auth.profile or auth credentials (id and secret) must be provided',
+        path: 'auth'
+      });
+    }
+
+    // Ensure both id and secret are provided together if one is provided
+    if ((config.app.auth.id && !config.app.auth.secret) || 
+        (!config.app.auth.id && config.app.auth.secret)) {
+      details.push({
+        message: 'Both auth.id and auth.secret must be provided together',
+        path: 'auth'
+      });
+    }
   }
 
   return utils.addLocation(details, 'app');

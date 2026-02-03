@@ -33,9 +33,9 @@ const MAX_RETRY_DELAY = 1000 * 60 * 2;
 
 export default function configure ({ auth, name: _name, region }: MupAwsConfig) {
   const commonOptions = {
-    credentials: {
-      accessKeyId: auth.id,
-      secretAccessKey: auth.secret,
+    credentials: auth.profile ? undefined : {
+      accessKeyId: auth.id!,
+      secretAccessKey: auth.secret!,
     },
     region: region || 'us-east-1',
     maxRetries: 25,
@@ -43,6 +43,11 @@ export default function configure ({ auth, name: _name, region }: MupAwsConfig) 
       customBackoff: (retryCount: number) => Math.min((2 ** retryCount * 1000), MAX_RETRY_DELAY)
     }
   };
+
+  // Set AWS_PROFILE environment variable if profile is specified
+  if (auth.profile) {
+    process.env.AWS_PROFILE = auth.profile;
+  }
 
   s3 = new S3({
     ...commonOptions,
