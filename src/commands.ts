@@ -1,12 +1,16 @@
 import * as commandHandlers from './command-handlers';
 import configure from './aws';
 import { MupApi } from "./types";
+import { verifyAwsAccount } from './validate';
 
 let prepared = false;
 
 function prepare(commandHandler: Function) {
-  return function handler (api: MupApi) {
+  return async function handler (api: MupApi) {
     if (!prepared) {
+      // Verify AWS account BEFORE configuring AWS SDK
+      await verifyAwsAccount(api.getConfig());
+      
       configure(api.getConfig().app);
       prepared = true;
     }

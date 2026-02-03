@@ -8,9 +8,9 @@ export const description = 'Deploy Meteor app to AWS Elastic Beanstalk';
 export const commands = _commands;
 
 export const validate = {
-  app (config: MupConfig, utils: MupUtils) {
+  async app (config: MupConfig, utils: MupUtils) {
     if (config.app && config.app.type === 'aws-beanstalk') {
-      return validator(config, utils);
+      return await validator(config, utils);
     }
 
     return [];

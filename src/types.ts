@@ -34,6 +34,7 @@ export type MupAwsConfig = {
   forceSSL?: boolean;
   region: string;
   awsPlatformBranchName: string;
+  awsAccountName: string;
   minInstances: number;
   maxInstances: number;
   streamLogs?: boolean;
