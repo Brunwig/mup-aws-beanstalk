@@ -127,6 +127,7 @@ async function printAwsAccountInfo(config: MupConfig) {
 
   // Set AWS_PROFILE environment variable if profile is specified
   if (config.app.auth.profile) {
+    console.log(`   Setting AWS_PROFILE to: ${config.app.auth.profile}`);
     process.env.AWS_PROFILE = config.app.auth.profile;
   }
 
@@ -136,7 +137,25 @@ async function printAwsAccountInfo(config: MupConfig) {
   const account = new Account(commonOptions);
 
   // Get caller identity (account ID, user ARN, etc.)
-  const identity = await sts.getCallerIdentity({});
+  console.log('   Attempting to get AWS caller identity...');
+  let identity;
+  try {
+    identity = await sts.getCallerIdentity({});
+    console.log('   ✅ Successfully authenticated with AWS');
+  } catch (error: any) {
+    console.log('   ❌ Failed to authenticate with AWS');
+    console.log(`   Error: ${error.message}`);
+    console.log(`   Error name: ${error.name}`);
+    if (error.name === 'CredentialsProviderError') {
+      console.log('\n💡 Credential Provider Error Details:');
+      console.log('   This usually means:');
+      console.log('   1. SSO session expired - run: aws sso login --profile <profile-name>');
+      console.log('   2. Profile not found in ~/.aws/config');
+      console.log('   3. Invalid access keys');
+      console.log('');
+    }
+    throw error;
+  }
   const accountId = identity.Account!;
   
   const expectedAccountName = config.app.awsAccountName;
