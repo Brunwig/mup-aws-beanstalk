@@ -134,3 +134,9 @@ export const debug = {
   },
   handler: prepare(commandHandlers.debug)
 };
+
+export const awsLogin = {
+  name: 'login',
+  description: 'Login to AWS SSO using the configured profile',
+  handler: commandHandlers.awsLogin
+};

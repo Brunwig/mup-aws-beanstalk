@@ -2,6 +2,10 @@
 
 Read the [Getting Started tutorial](./getting-started.md).
 
+## IAM Permissions
+
+See the [IAM Policy Documentation](./iam-policy.md) for required AWS permissions and security setup.
+
 ## Config
 
 - This plugin is configured with the `app` object in your config.

@@ -928,3 +928,65 @@ export async function debug(api: MupApi) {
     process.exit();
   });
 }
+
+export async function awsLogin(api: MupApi) {
+  const config = api.getConfig();
+  
+  if (!config.app || config.app.type !== 'aws-beanstalk') {
+    console.log('This command is only available for aws-beanstalk apps');
+    process.exitCode = 1;
+    return;
+  }
+
+  const profile = config.app.auth?.profile;
+  
+  if (!profile) {
+    console.log('❌ No AWS profile configured.');
+    console.log('');
+    console.log('This command requires an AWS profile to be configured in your mup config:');
+    console.log('');
+    console.log('  app: {');
+    console.log('    auth: {');
+    console.log('      profile: "your-profile-name"');
+    console.log('    }');
+    console.log('  }');
+    console.log('');
+    console.log('If you are using access keys (id and secret), you do not need to login.');
+    process.exitCode = 1;
+    return;
+  }
+
+  logStep(`=> Logging in to AWS SSO with profile: ${profile}`);
+  console.log('');
+
+  const { spawn } = require('child_process');
+  
+  const loginProcess = spawn('aws', ['sso', 'login', '--profile', profile], {
+    stdio: 'inherit',
+    shell: true
+  });
+
+  loginProcess.on('error', (error: Error) => {
+    console.log('');
+    console.log('❌ Failed to run AWS CLI command.');
+    console.log('');
+    console.log('Make sure the AWS CLI is installed:');
+    console.log('  https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html');
+    console.log('');
+    console.log(`Error: ${error.message}`);
+    process.exitCode = 1;
+  });
+
+  loginProcess.on('close', (code: number) => {
+    if (code === 0) {
+      console.log('');
+      console.log('✅ Successfully logged in to AWS SSO');
+      console.log('');
+      console.log('You can now run mup commands that require AWS access.');
+    } else {
+      console.log('');
+      console.log(`❌ AWS SSO login failed with exit code ${code}`);
+      process.exitCode = code;
+    }
+  });
+}
